@@ -4,18 +4,6 @@ name: "Deploy"
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-    inputs:
-      deploy_branch:
-        description: Deploy branch
-        default: "develop"
-        required: true
-      image_tag:
-        description: Container Image tag Tech Stack
-        default: "latest"
-        required: true
-      deploy_cards:
-        description: Deployment Note (e.g. STM-123, STM-456)
-        required: false
 
 env:
   working-directory: examples/complete/WebApi
@@ -66,9 +54,20 @@ jobs:
           name: webapi
 
       - name: Get Publish Profile
+        id: get-publish-profile
         uses: mildronize/actions-az-cli/webapp/deployment/list-publishing-profiles@v1
         with:
           azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
           name: ${{ matrix.name }}
           slot: production
           resource_group: ${{ env.resource-group }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ matrix.name }}
+          publish-profile: ${{ steps.get-publish-profile.outputs.publish_profile }}
+          package: .
+          slot-name: production
+  
