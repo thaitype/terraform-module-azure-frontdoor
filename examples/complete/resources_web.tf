@@ -2,58 +2,36 @@
 
 locals {
 
-
-
-  # app_services = [
-  #   {
-  #     name = module.naming_convention_webapi["cat"].name
-  #     site = "active"
-  #   },
-  #   {
-  #     name   = module.naming_convention_webapi["dog"].name
-  #     site = "active"
-  #   },
-  #   {
-  #     name   = module.naming_convention_webapi["bird"].name
-  #     site = "active"
-  #   },
-  #   {
-  #     name = module.naming_convention_webapi_dr["cat"].name
-  #     site = "dr"
-  #   },
-  #   {
-  #     name   = module.naming_convention_webapi_dr["dog"].name
-  #     site = "dr"
-  #   },
-  #   {
-  #     name   = module.naming_convention_webapi_dr["bird"].name
-  #     site = "dr"
-  #   },
-  # ]
   app_services = {
     cat = {
-      name = module.naming_convention_webapi["cat"].name
-      site = "active"
+      name           = module.naming_convention_webapi["cat"].name
+      site           = "active"
+      ip_restriction = module.cdn_frontdoor_endpoint_webapi["cat"].azurerm_app_service_ip_restriction
     }
     dog = {
-      name = module.naming_convention_webapi["dog"].name
-      site = "active"
+      name           = module.naming_convention_webapi["dog"].name
+      site           = "active"
+      ip_restriction = module.cdn_frontdoor_endpoint_webapi["dog"].azurerm_app_service_ip_restriction
     }
     bird = {
-      name = module.naming_convention_webapi["bird"].name
-      site = "active"
+      name           = module.naming_convention_webapi["bird"].name
+      site           = "active"
+      ip_restriction = module.cdn_frontdoor_endpoint_webapi["bird"].azurerm_app_service_ip_restriction
     }
     cat_dr = {
-      name = module.naming_convention_webapi_dr["cat"].name
-      site = "dr"
+      name           = module.naming_convention_webapi_dr["cat"].name
+      site           = "dr"
+      ip_restriction = module.cdn_frontdoor_endpoint_webapi["cat"].azurerm_app_service_ip_restriction
     }
     dog_dr = {
-      name = module.naming_convention_webapi_dr["dog"].name
-      site = "dr"
+      name           = module.naming_convention_webapi_dr["dog"].name
+      site           = "dr"
+      ip_restriction = module.cdn_frontdoor_endpoint_webapi["dog"].azurerm_app_service_ip_restriction
     }
     bird_dr = {
-      name = module.naming_convention_webapi_dr["bird"].name
-      site = "dr"
+      name           = module.naming_convention_webapi_dr["bird"].name
+      site           = "dr"
+      ip_restriction = module.cdn_frontdoor_endpoint_webapi["bird"].azurerm_app_service_ip_restriction
     }
   }
 }
@@ -98,6 +76,7 @@ resource "azurerm_app_service" "webapi" {
     use_32_bit_worker_process = false
     always_on                 = true
     ftps_state                = "FtpsOnly"
+    ip_restriction            = each.value.ip_restriction
   }
 
   app_settings = {
