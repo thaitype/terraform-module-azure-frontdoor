@@ -55,9 +55,9 @@ locals {
         project_short     = "wstm"
         environment       = "dev-dr"
         environment_short = "ddr"
-        scope             = "common"
-        scope_short       = "com"
-        scope_shortest    = "com"
+        scope             = "w"
+        scope_short       = "w"
+        scope_shortest    = "w"
       }
       resource_attributes = local.resource_shared
     }

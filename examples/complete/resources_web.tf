@@ -30,20 +30,32 @@ locals {
   #     site = "dr"
   #   },
   # ]
-  app_services = merge(
-    {
-      for key, value in module.naming_convention_webapi : key => {
-        name = value.name
-        site = "active"
-      }
-    },
-    {
-      for key, value in module.naming_convention_webapi_dr : key => {
-        name = value.name
-        site = "dr"
-      }
+  app_services = {
+    cat = {
+      name = module.naming_convention_webapi["cat"].name
+      site = "active"
     }
-  )
+    dog = {
+      name = module.naming_convention_webapi["dog"].name
+      site = "active"
+    }
+    bird = {
+      name = module.naming_convention_webapi["bird"].name
+      site = "active"
+    }
+    cat_dr = {
+      name = module.naming_convention_webapi_dr["cat"].name
+      site = "dr"
+    }
+    dog_dr = {
+      name = module.naming_convention_webapi_dr["dog"].name
+      site = "dr"
+    }
+    bird_dr = {
+      name = module.naming_convention_webapi_dr["bird"].name
+      site = "dr"
+    }
+  }
 }
 
 resource "azurerm_app_service_plan" "active" {
