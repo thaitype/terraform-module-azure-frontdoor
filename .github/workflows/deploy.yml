@@ -1,0 +1,74 @@
+name: "Dev MT: Deploy to Dev Multi-Tenant"
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      deploy_branch:
+        description: Deploy branch
+        default: "develop"
+        required: true
+      image_tag:
+        description: Container Image tag Tech Stack
+        default: "latest"
+        required: true
+      deploy_cards:
+        description: Deployment Note (e.g. STM-123, STM-456)
+        required: false
+
+env:
+  working-directory: examples/complete/WebApi
+  resource-group: thw-event-front-door-demo
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.x"
+      - name: Install dependencies
+        run: dotnet restore
+        working-directory: ${{ env.working-directory }}
+      - name: Build
+        run: dotnet build --configuration Release
+        working-directory: ${{ env.working-directory }}
+      - name: Publish
+        run: dotnet publish --configuration Release --output ./publish
+        working-directory: ${{ env.working-directory }}
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapi
+          path: ${{ env.working-directory }}/publish
+          # Keep artifact on remote only 1 day
+          retention-days: 1
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        include: 
+          - name: thwfd-dev-dr-w-cat
+          - name: thwfd-dev-dr-w-dog
+          - name: thwfd-dev-dr-w-bird
+          - name: thwfd-dev-w-cat
+          - name: thwfd-dev-w-dog
+          - name: thwfd-dev-w-bird
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: webapi
+
+      - name: Get Publish Profile
+        uses: mildronize/actions-az-cli/webapp/deployment/list-publishing-profiles@v1
+        with:
+          azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          name: ${{ matrix.name }}
+          slot: production
+          resource_group: ${{ env.resource-group }}
