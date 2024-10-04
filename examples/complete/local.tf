@@ -99,11 +99,11 @@ locals {
           origin_config = {
             active = {
               host_name = module.naming_convention_webapi["cat"].default_hostname
+              weight    = 50
             }
             dr = {
               host_name = module.naming_convention_webapi_dr["cat"].default_hostname
-              priority  = 2
-              weight    = 500
+              weight    = 50
             }
           }
         }
@@ -113,11 +113,11 @@ locals {
           origin_config = {
             active = {
               host_name = module.naming_convention_webapi["dog"].default_hostname
+              weight    = 50
             }
             dr = {
               host_name = module.naming_convention_webapi_dr["dog"].default_hostname
-              priority  = 2
-              weight    = 500
+              weight    = 50
             }
           }
         }
@@ -127,11 +127,11 @@ locals {
           origin_config = {
             active = {
               host_name = module.naming_convention_webapi["bird"].default_hostname
+              weight    = 50
             }
             dr = {
               host_name = module.naming_convention_webapi_dr["bird"].default_hostname
-              priority  = 2
-              weight    = 500
+              weight    = 50
             }
           }
         }
