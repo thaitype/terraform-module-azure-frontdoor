@@ -82,7 +82,7 @@ resource "azurerm_app_service" "webapi" {
   app_settings = {
     # App Service Settings
     "MSDEPLOY_RENAME_LOCKED_FILES" = "1" # Prevent Locked files when deploy
-    "APP_ID"                       = "${each.key}"
+    "APP_ID"                       = "${each.key} (${ each.value.site == "active" ? var.location_active : var.location_dr})"
   }
 
 }
